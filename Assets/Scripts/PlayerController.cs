@@ -5,15 +5,18 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D _rb;
+    private Animator _anim;
     private float _movementInputDirection; 
     private bool _isFacingRight = true;
     public float movementSpeed = 10.0f;
     public float jumpForce = 16.0f;
+    private bool _isWalking;
 
     // Start is called before the first frame update
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
+        _anim = GetComponent<Animator>();
     }
     
     // Update is called once per frame
@@ -22,6 +25,7 @@ public class PlayerController : MonoBehaviour
     {
         CheckInput();
         CheckMovementDirection();
+        UpdateAnimations();
     }   
 
     private void FixedUpdate()
@@ -39,6 +43,20 @@ public class PlayerController : MonoBehaviour
         {
             Flip();
         }
+
+        if(_rb.velocity.x != 0)
+        {
+            _isWalking = true;
+        }
+        else
+        {
+            _isWalking = false;
+        }
+    }
+
+    private void UpdateAnimations()
+    {
+        _anim.SetBool("isWalking", _isWalking);
     }
 
     private void CheckInput()
