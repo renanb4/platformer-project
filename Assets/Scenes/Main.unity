@@ -55824,6 +55824,8 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 256
+  wallHopDirection: {x: 1, y: 0.5}
+  wallJumpDirection: {x: 1, y: 2}
   amountOfJumps: 1
   movementSpeed: 10
   jumpForce: 16
@@ -55831,6 +55833,10 @@ MonoBehaviour:
   wallCheckDistance: 0.4
   wallSlideSpeed: 2
   movementForceInAir: 50
+  airDragMultiplier: 0.95
+  variableJumpHeightMultiplier: 0.5
+  wallHopForce: 10
+  wallJumpForce: 20
 --- !u!95 &2036833737
 Animator:
   serializedVersion: 3
