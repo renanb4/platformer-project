@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour
     //private
     private Rigidbody2D _rb;
     private Animator _anim;
+    private Vector2 _ledgePosBot;
+    private Vector2 _ledgePos1;
+    private Vector2 _ledgePos2;
     private bool _isFacingRight = true;
     private bool _isWalking;
     private bool _isGrounded;
@@ -19,6 +22,9 @@ public class PlayerController : MonoBehaviour
     private bool _canMove;
     private bool _canFlip;
     private bool _hasWallJumped;
+    private bool _isTouchingLedge;
+    private bool _canClimbLedge = false;
+    private bool _ledgeDetected;
     private int _amountOfJumpsLeft;
     private int _lastWallJumpDirection;
     private int _facingDirection = 1;
@@ -31,6 +37,7 @@ public class PlayerController : MonoBehaviour
     //public
     public Transform groundCheck;
     public Transform wallCheck;
+    public Transform ledgeCheck;
     public LayerMask whatIsGround;
     public Vector2 wallHopDirection;
     public Vector2 wallJumpDirection;
@@ -48,6 +55,10 @@ public class PlayerController : MonoBehaviour
     public float jumpTimerSet = 0.15f;
     public float turnTimerSet = 0.1f;
     public float wallJumpTimerSet = 0.5f;
+    public float ledgeClimbXOffset1 = 0f;
+    public float ledgeClimbYOffset1 = 0f;
+    public float ledgeClimbXOffset2 = 0f;
+    public float ledgeClimbYOffset2 = 0f;
 
 
     
@@ -68,6 +79,7 @@ public class PlayerController : MonoBehaviour
         CheckIfCanJump();
         CheckIfWallSliding();
         CheckJump();
+        CheckLedgeClimb();
     }   
 
     private void FixedUpdate()
@@ -86,13 +98,41 @@ public class PlayerController : MonoBehaviour
 
     private void CheckIfWallSliding()
     {
-        if(_isTouchingWall && _movementInputDirection == _facingDirection && _rb.velocity.y < 0)
+        if(_isTouchingWall && _movementInputDirection == _facingDirection && _rb.velocity.y < 0 && !_canClimbLedge)
         {
             _iswallSliding = true;
         }
         else
         {
             _iswallSliding = false;
+        }
+    }
+
+    private void CheckLedgeClimb()
+    {
+        if(_ledgeDetected && !_canClimbLedge)
+        {
+            _canClimbLedge = true;
+
+            if(_isFacingRight)
+            {
+                _ledgePos1 = new Vector2(Mathf.Floor(_ledgePosBot.x + wallCheckDistance) - ledgeClimbXOffset1, Mathf.Floor(_ledgePosBot.y) + ledgeClimbYOffset1);
+                _ledgePos2 = new Vector2(Mathf.Floor(_ledgePosBot.x + wallCheckDistance) + ledgeClimbXOffset2, Mathf.Floor(_ledgePosBot.y) + ledgeClimbYOffset2);
+            }
+            else
+            {
+                _ledgePos1 = new Vector2(Mathf.Ceil(_ledgePosBot.x - wallCheckDistance) + ledgeClimbXOffset1, Mathf.Floor(_ledgePosBot.y) + ledgeClimbYOffset1);
+                _ledgePos2 = new Vector2(Mathf.Ceil(_ledgePosBot.x - wallCheckDistance) - ledgeClimbXOffset2, Mathf.Floor(_ledgePosBot.y) + ledgeClimbYOffset2);
+            }
+
+            _canMove = false;
+            _canFlip = false;
+            _anim.SetBool("canClimbLedge", _canClimbLedge);
+        }
+
+        if(_canClimbLedge)
+        {
+            transform.position = _ledgePos1;
         }
     }
 
@@ -122,6 +162,13 @@ public class PlayerController : MonoBehaviour
     {
         _isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
         _isTouchingWall = Physics2D.Raycast(wallCheck.position, transform.right, wallCheckDistance, whatIsGround);
+        _isTouchingLedge = Physics2D.Raycast(ledgeCheck.position, transform.right, wallCheckDistance, whatIsGround);
+
+        if(_isTouchingWall && !_isTouchingLedge && !_ledgeDetected)
+        {
+            _ledgeDetected = true;
+            _ledgePosBot = wallCheck.position;
+        }
     }
 
     private void CheckInput()
@@ -152,7 +199,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if(!_canMove)
+        if(_turnTimer >= 0)
         {
             _turnTimer -= Time.deltaTime;
 
@@ -300,8 +347,17 @@ public class PlayerController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-
+        Gizmos.DrawLine(ledgeCheck.position, new Vector3(ledgeCheck.position.x + wallCheckDistance, ledgeCheck.position.y, ledgeCheck.position.z));
         Gizmos.DrawLine(wallCheck. position, new Vector3(wallCheck.position.x + wallCheckDistance, wallCheck.position.y, wallCheck.position.z));
     }
 
+    public void FinishLedgeClimb()
+    {
+        _canClimbLedge = false;
+        transform.position = _ledgePos2;
+        _canMove = true;
+        _canFlip = true;
+        _ledgeDetected = false;
+        _anim.SetBool("canClimbLedge", _canClimbLedge);
+    }
 }
