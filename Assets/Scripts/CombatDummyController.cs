@@ -5,41 +5,41 @@ using UnityEngine;
 public class CombatDummyController : MonoBehaviour
 {
     [SerializeField]
-    private float maxHealth, knockbackSpeedX, knockbackSpeedY, knockbackDuration, knockbackDeathSpeedX, knockbackDeathSpeedY, deathTorque;
+    private float _maxHealth, _knockbackSpeedX, _knockbackSpeedY, _knockbackDuration, _knockbackDeathSpeedX, _knockbackDeathSpeedY, _deathTorque;
     [SerializeField]
-    private bool applyKnockback;
+    private bool _applyKnockback;
     [SerializeField]
-    private GameObject hitParticle;
+    private GameObject _hitParticle;
 
-    private float currentHealth, knockbackStart;
+    private float _currentHealth, _knockbackStart;
 
-    private int playerFacingDirection;
+    private int _playerFacingDirection;
 
-    private bool playerOnLeft, knockback;
+    private bool _playerOnLeft, _knockback;
 
-    private PlayerController pc;
-    private GameObject aliveGO, brokenTopGO, brokenBotGO;
-    private Rigidbody2D rbAlive, rbBrokenTop, rbBrokenBot;
-    private Animator aliveAnim;
+    private PlayerController _pc;
+    private GameObject _aliveGO, _brokenTopGO, _brokenBotGO;
+    private Rigidbody2D _rbAlive, _rbBrokenTop, _rbBrokenBot;
+    private Animator _aliveAnim;
 
     private void Start()
     {
-        currentHealth = maxHealth;
+        _currentHealth = _maxHealth;
 
-        pc = GameObject.Find("Player").GetComponent<PlayerController>();
+        _pc = GameObject.Find("Player").GetComponent<PlayerController>();
 
-        aliveGO = transform.Find("Alive").gameObject;
-        brokenTopGO = transform.Find("Broken Top").gameObject;
-        brokenBotGO = transform.Find("Broken Bottom").gameObject;
+        _aliveGO = transform.Find("Alive").gameObject;
+        _brokenTopGO = transform.Find("Broken Top").gameObject;
+        _brokenBotGO = transform.Find("Broken Bottom").gameObject;
 
-        aliveAnim = aliveGO.GetComponent<Animator>();
-        rbAlive = aliveGO.GetComponent<Rigidbody2D>();
-        rbBrokenTop = brokenTopGO.GetComponent<Rigidbody2D>();
-        rbBrokenBot = brokenBotGO.GetComponent<Rigidbody2D>();
+        _aliveAnim = _aliveGO.GetComponent<Animator>();
+        _rbAlive = _aliveGO.GetComponent<Rigidbody2D>();
+        _rbBrokenTop = _brokenTopGO.GetComponent<Rigidbody2D>();
+        _rbBrokenBot = _brokenBotGO.GetComponent<Rigidbody2D>();
 
-        aliveGO.SetActive(true);
-        brokenTopGO.SetActive(false);
-        brokenBotGO.SetActive(false);
+        _aliveGO.SetActive(true);
+        _brokenTopGO.SetActive(false);
+        _brokenBotGO.SetActive(false);
     }
 
     private void Update()
@@ -49,30 +49,30 @@ public class CombatDummyController : MonoBehaviour
 
     private void Damage(float amount)
     {
-        currentHealth -= amount;
-        playerFacingDirection = pc.GetFacingDirection();
+        _currentHealth -= amount;
+        _playerFacingDirection = _pc.GetFacingDirection();
 
-        Instantiate(hitParticle, aliveAnim.transform.position, Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f)));
+        Instantiate(_hitParticle, _aliveAnim.transform.position, Quaternion.Euler(0.0f, 0.0f, Random.Range(0.0f, 360.0f)));
 
-        if(playerFacingDirection == 1)
+        if(_playerFacingDirection == 1)
         {
-            playerOnLeft = true;
+            _playerOnLeft = true;
         }
         else
         {
-            playerOnLeft = false;
+            _playerOnLeft = false;
         }
 
-        aliveAnim.SetBool("playerOnLeft", playerOnLeft);
-        aliveAnim.SetTrigger("damage");
+        _aliveAnim.SetBool("playerOnLeft", _playerOnLeft);
+        _aliveAnim.SetTrigger("damage");
 
-        if(applyKnockback && currentHealth > 0.0f)
+        if(_applyKnockback && _currentHealth > 0.0f)
         {
             //Knockback
             Knockback();
         }
 
-        if(currentHealth <= 0.0f)
+        if(_currentHealth <= 0.0f)
         {
             //Die
             Die();
@@ -81,31 +81,31 @@ public class CombatDummyController : MonoBehaviour
 
     private void Knockback()
     {
-        knockback = true;
-        knockbackStart = Time.time;
-        rbAlive.velocity = new Vector2(knockbackSpeedX * playerFacingDirection, knockbackSpeedY);
+        _knockback = true;
+        _knockbackStart = Time.time;
+        _rbAlive.velocity = new Vector2(_knockbackSpeedX * _playerFacingDirection, _knockbackSpeedY);
     }
 
     private void CheckKnockback()
     {
-        if(Time.time >= knockbackStart + knockbackDuration && knockback)
+        if(Time.time >= _knockbackStart + _knockbackDuration && _knockback)
         {
-            knockback = false;
-            rbAlive.velocity = new Vector2(0.0f, rbAlive.velocity.y);
+            _knockback = false;
+            _rbAlive.velocity = new Vector2(0.0f, _rbAlive.velocity.y);
         }
     }
 
     private void Die()
     {
-        aliveGO.SetActive(false);
-        brokenTopGO.SetActive(true);
-        brokenBotGO.SetActive(true);
+        _aliveGO.SetActive(false);
+        _brokenTopGO.SetActive(true);
+        _brokenBotGO.SetActive(true);
 
-        brokenTopGO.transform.position = aliveGO.transform.position;
-        brokenBotGO.transform.position = aliveGO.transform.position;
+        _brokenTopGO.transform.position = _aliveGO.transform.position;
+        _brokenBotGO.transform.position = _aliveGO.transform.position;
 
-        rbBrokenBot.velocity = new Vector2(knockbackSpeedX * playerFacingDirection, knockbackSpeedY);
-        rbBrokenTop.velocity = new Vector2(knockbackDeathSpeedX * playerFacingDirection, knockbackDeathSpeedY);
-        rbBrokenTop.AddTorque(deathTorque * -playerFacingDirection, ForceMode2D.Impulse);
+        _rbBrokenBot.velocity = new Vector2(_knockbackSpeedX * _playerFacingDirection, _knockbackSpeedY);
+        _rbBrokenTop.velocity = new Vector2(_knockbackDeathSpeedX * _playerFacingDirection, _knockbackDeathSpeedY);
+        _rbBrokenTop.AddTorque(_deathTorque * -_playerFacingDirection, ForceMode2D.Impulse);
     }
 }

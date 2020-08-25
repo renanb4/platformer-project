@@ -46,8 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ae2d8fffd903e459303444fcdae457, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
-  knockbackSpeedX: 10
+  maxHealth: 100
+  knockbackSpeedX: 2
   knockbackSpeedY: 5
   knockbackDuration: 0.1
   knockbackDeathSpeedX: 15
