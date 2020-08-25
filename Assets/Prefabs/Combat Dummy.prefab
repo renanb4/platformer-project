@@ -46,15 +46,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5ae2d8fffd903e459303444fcdae457, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  knockbackSpeedX: 2
-  knockbackSpeedY: 5
-  knockbackDuration: 0.1
-  knockbackDeathSpeedX: 15
-  knockbackDeathSpeedY: 8
-  deathTorque: 1
-  applyKnockback: 1
-  hitParticle: {fileID: 6240072112886026631, guid: 25aeb624df7917e4aa9cbe2204b85ed6,
+  _maxHealth: 60
+  _knockbackSpeedX: 10
+  _knockbackSpeedY: 5
+  _knockbackDuration: 0.1
+  _knockbackDeathSpeedX: 15
+  _knockbackDeathSpeedY: 8
+  _deathTorque: 1
+  _applyKnockback: 1
+  _hitParticle: {fileID: 6240072112886026631, guid: 25aeb624df7917e4aa9cbe2204b85ed6,
     type: 3}
 --- !u!1 &1391416089730197105
 GameObject:
